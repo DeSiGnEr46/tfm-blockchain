@@ -1,5 +1,7 @@
-# 3org2ch_143
-Rewrite 3org2ch with latest code (1.4.3)
+# Two channel - Three nodes Hyperledger Fabric Blockchain
+This project was used for Oliver López Olmedo as part of his TFM in the University of Málaga.
+This project was edited to be adapted to my needs based on kctam projec. All credits to him: https://github.com/kctam/3org2ch_143
+The instructions have been adapted to work with my configuration.
 
 This repo is used for creating a fabric network in a Hyperledger Fabric node.
 It is assumed you have a Hyperledger Fabric node, with the prerequisite installation done and all required components, including the docker images, tools and fabric samples.
@@ -8,7 +10,7 @@ It is assumed you have a Hyperledger Fabric node, with the prerequisite installa
 Step 1: clone this repo in fabric-samples directory
 ```
 cd fabric-samples
-git clone https://github.com/kctam/3org2ch_143.git
+git clone https://github.com/DeSiGnEr46/tfm-blockchain
 cd 3org2ch_143
 ```
 
@@ -25,8 +27,8 @@ mkdir channel-artifacts && export FABRIC_CFG_PATH=$PWD
 
 export CHANNEL_ONE_NAME=channelall
 export CHANNEL_ONE_PROFILE=ChannelAll
-export CHANNEL_TWO_NAME=channel12
-export CHANNEL_TWO_PROFILE=Channel12
+export CHANNEL_TWO_NAME=channel13
+export CHANNEL_TWO_PROFILE=Channel13
 
 ../bin/configtxgen -profile ${CHANNEL_ONE_PROFILE} -outputCreateChannelTx ./channel-artifacts/${CHANNEL_ONE_NAME}.tx -channelID $CHANNEL_ONE_NAME
 
@@ -40,12 +42,12 @@ export CHANNEL_TWO_PROFILE=Channel12
 
 ../bin/configtxgen -profile ${CHANNEL_TWO_PROFILE} -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors_${CHANNEL_TWO_NAME}.tx -channelID $CHANNEL_TWO_NAME -asOrg Org1MSP
 
-../bin/configtxgen -profile ${CHANNEL_TWO_PROFILE} -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors_${CHANNEL_TWO_NAME}.tx -channelID $CHANNEL_TWO_NAME -asOrg Org2MSP
+../bin/configtxgen -profile ${CHANNEL_TWO_PROFILE} -outputAnchorPeersUpdate ./channel-artifacts/Org3MSPanchors_${CHANNEL_TWO_NAME}.tx -channelID $CHANNEL_TWO_NAME -asOrg Org3MSP
 ```
 
 Step 4: bring up all the containers, and you should see total 8 containers up and running
 ```
-docker-compose up -d
+docker-compose -f docker-compose.yaml up -d
 docker ps
 ```
 
@@ -99,22 +101,22 @@ peer channel join -b channelall.block --tls --cafile $ORDERER_CA
 peer channel update -o orderer.example.com:7050 -c channelall -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org3MSPanchors_channelall.tx --tls --cafile $ORDERER_CA
 ```
 
-For channel12
+For channel13
 
 *Org1*
 ```
-peer channel create -o orderer.example.com:7050 -c channel12 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/channel12.tx --tls --cafile $ORDERER_CA
+peer channel create -o orderer.example.com:7050 -c channel13 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/channel13.tx --tls --cafile $ORDERER_CA
 
-peer channel join -b channel12.block --tls --cafile $ORDERER_CA
+peer channel join -b channel13.block --tls --cafile $ORDERER_CA
 
-peer channel update -o orderer.example.com:7050 -c channel12 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org1MSPanchors_channel12.tx --tls --cafile $ORDERER_CA
+peer channel update -o orderer.example.com:7050 -c channel13 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org1MSPanchors_channel13.tx --tls --cafile $ORDERER_CA
 ```
 
-*Org2*
+*Org3*
 ```
-peer channel join -b channel12.block --tls --cafile $ORDERER_CA
+peer channel join -b channel13.block --tls --cafile $ORDERER_CA
 
-peer channel update -o orderer.example.com:7050 -c channel12 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org2MSPanchors_channel12.tx --tls --cafile $ORDERER_CA
+peer channel update -o orderer.example.com:7050 -c channel13 -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/Org3MSPanchors_channel13.tx --tls --cafile $ORDERER_CA
 ```
 
 Step 6: Check each peer the channel(s) it has joint. 
